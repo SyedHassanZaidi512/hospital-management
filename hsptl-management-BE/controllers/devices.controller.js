@@ -1,62 +1,62 @@
-const fs = require("fs-extra");
-const multer = require("multer");
-const path = require("path");
-const { v4: uuid } = require("uuid");
-const excelToJson = require("convert-excel-to-json");
-const { PrismaClient } = require("@prisma/client");
+const fs = require('fs-extra');
+const multer = require('multer');
+const path = require('path');
+const {v4: uuid} = require('uuid');
+const excelToJson = require('convert-excel-to-json');
+const {PrismaClient} = require('@prisma/client');
 const prisma = new PrismaClient();
-const { getTime } = require("../utils");
-const { insertDevicesToDb, cleanKeys } = require("../utils");
-const { error } = require("console");
+const {getTime} = require('../utils');
+const {insertDevicesToDb, cleanKeys} = require('../utils');
+const {error} = require('console');
 
 const host = process.env.LOCAL_HOST;
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads");
+    cb(null, 'uploads');
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + uuid() + path.extname(file.originalname));
-  },
+  }
 });
 
 module.exports.uploadDeviceData = async (req, res) => {
-  const { originalname, filename } = req.file;
+  const {originalname, filename} = req.file;
 
   const file = await prisma.files.findMany({
     where: {
-      name: originalname,
-    },
+      name: originalname
+    }
   });
 
   if (file[0]?.name === originalname)
     return res.status(400).json({
-      message: "File already exists!",
-      error: true,
+      message: 'File already exists!',
+      error: true
     });
 
   try {
-    if (filename === null || filename === "undefined") {
+    if (filename === null || filename === 'undefined') {
       res.status(400).json({
-        message: "No file found!",
-        error: true,
+        message: 'No file found!',
+        error: true
       });
-    } else if (path.extname(originalname) !== ".xlsx") {
+    } else if (path.extname(originalname) !== '.xlsx') {
       res.status(400).json({
-        message: "Unsupported file type!",
-        error: true,
+        message: 'Unsupported file type!',
+        error: true
       });
     } else {
-      let filePath = "uploads/" + filename;
+      let filePath = 'uploads/' + filename;
 
       const excelData = excelToJson({
         sourceFile: filePath,
         header: {
-          rows: 1,
+          rows: 1
         },
         columnToKey: {
-          "*": "{{columnHeader}}",
-        },
+          '*': '{{columnHeader}}'
+        }
       });
 
       fs.remove(filePath);
@@ -79,14 +79,14 @@ module.exports.uploadDeviceData = async (req, res) => {
 
       await prisma.files.create({
         data: {
-          name: originalname,
-        },
+          name: originalname
+        }
       });
 
       res.status(201).json({
-        message: "Data uploaded successfully",
+        message: 'Data uploaded successfully',
         error: false,
-        devicesData,
+        devicesData
       });
     }
   } catch (error) {
@@ -96,26 +96,38 @@ module.exports.uploadDeviceData = async (req, res) => {
 
 module.exports.getAllDevices = async (req, res) => {
   try {
+
+    const currentPage = req.query.page || 1;
+    const itemsPerPage = parseInt(req.query.itemsPerPage) || 10;
+    console.log(typeof itemsPerPage);
+    const skip = (currentPage - 1) * itemsPerPage; // Calculate the number of items to skip
+    const take = itemsPerPage; // Number of items to take on the current page
+
     const devices = await prisma.devices.findMany({
       include: {
         images: true,
         reminders: true,
-        notes: true,
+        notes: true
       },
+      skip,
+      take
     });
+
+    const totalLength = await prisma.devices.count();
 
     if (!devices.length)
       return res.status(404).json({
-        message: "No results found!",
-        error: true,
+        message: 'No results found!',
+        error: true
       });
 
     res.status(200).json({
-      message: "Data populated successfully",
+      message: 'Data populated successfully',
       error: null,
       data: {
         devices,
-      },
+        totalLength
+      }
     });
   } catch (error) {
     console.log(error);
@@ -124,33 +136,30 @@ module.exports.getAllDevices = async (req, res) => {
 
 module.exports.searchDevices = async (req, res) => {
   try {
-    const { anlagenID, seriennr } = req.query;
+    const {anlagenID, seriennr} = req.query;
     const device = await prisma.devices.findMany({
       where: {
-        OR: [
-          { anlagenID: anlagenID || undefined },
-          { seriennr: seriennr || undefined },
-        ],
+        OR: [{anlagenID: anlagenID || undefined}, {seriennr: seriennr || undefined}]
       },
       include: {
         images: true,
         reminders: true,
-        notes: true,
-      },
+        notes: true
+      }
     });
 
     if (!device)
       return res.status(404).json({
-        message: "No result found!",
-        error: true,
+        message: 'No result found!',
+        error: true
       });
 
     res.status(200).json({
-      message: "Data populated successfully",
+      message: 'Data populated successfully',
       error: false,
       data: {
-        device,
-      },
+        device
+      }
     });
   } catch (error) {
     console.log(error);
@@ -158,31 +167,31 @@ module.exports.searchDevices = async (req, res) => {
 };
 
 module.exports.getDevice = async (req, res) => {
-  const { deviceID } = req.params;
+  const {deviceID} = req.params;
   try {
     const device = await prisma.devices.findUnique({
       where: {
-        id: deviceID,
+        id: deviceID
       },
       include: {
         images: true,
         reminders: true,
-        notes: true,
-      },
+        notes: true
+      }
     });
 
     if (!device)
       return res.status(404).json({
-        message: "Device does not exists!",
-        error: true,
+        message: 'Device does not exists!',
+        error: true
       });
 
     res.status(200).json({
-      message: "Data populated successfully",
+      message: 'Data populated successfully',
       error: false,
       data: {
-        device,
-      },
+        device
+      }
     });
   } catch (error) {
     console.log(error);
@@ -190,11 +199,11 @@ module.exports.getDevice = async (req, res) => {
 };
 
 module.exports.updateDevices = async (req, res) => {
-  console.log("request made");
+  console.log('request made');
   const data = req.body;
-  const isReq = data?.isRequested === "true";
-  const isDone = data?.isDone === "true";
-  const { deviceID } = req.params;
+  const isReq = data?.isRequested === 'true';
+  const isDone = data?.isDone === 'true';
+  const {deviceID} = req.params;
   const imageFiles = req.files;
   let images;
   if (req?.files.length) {
@@ -202,163 +211,114 @@ module.exports.updateDevices = async (req, res) => {
       link1: `${host}${imageFiles[0]?.path}`,
       link2: `${host}${imageFiles[1]?.path}`,
       link3: `${host}${imageFiles[2]?.path}`,
-      link4: `${host}${imageFiles[3]?.path}`,
+      link4: `${host}${imageFiles[3]?.path}`
     };
   }
 
   try {
     const device = await prisma.devices.findUnique({
       where: {
-        id: deviceID,
-      },
+        id: deviceID
+      }
     });
 
     if (!device)
       return res.status(404).json({
-        message: "Device does not exits!",
-        error: true,
+        message: 'Device does not exits!',
+        error: true
       });
 
     await prisma.devices.update({
-      where: { id: deviceID },
+      where: {id: deviceID},
       data: {
-        anlagenID:
-          `${data?.anlagenID}` !== "undefined"
-            ? `${data?.anlagenID}`
-            : device?.anlagenID,
-        seriennr:
-          `${data?.seriennr}` !== "undefined"
-            ? `${data?.seriennr}`
-            : device?.seriennr,
-        gehortzu:
-          `${data?.gehortzu}` !== "undefined"
-            ? `${data?.gehortzu}`
-            : device?.gehortzu,
-        anlagenbez:
-          `${data?.anlagenbez}` !== "undefined"
-            ? `${data?.anlagenbez}`
-            : device?.anlagenbez,
-        typModell:
-          `${data?.typModell}` !== "undefined"
-            ? `${data?.typModell}`
-            : device?.typModell,
-        hersteller:
-          `${data?.hersteller}` !== "undefined"
-            ? `${data?.hersteller}`
-            : device?.hersteller,
-        lieferant:
-          `${data?.lieferant}` !== "undefined"
-            ? `${data?.lieferant}`
-            : device?.lieferant,
-        servicestelle:
-          `${data?.servicestelle}` !== "undefined"
-            ? `${data?.servicestelle}`
-            : device?.servicestelle,
-        abteilung:
-          `${data?.abteilung}` !== "undefined"
-            ? `${data?.abteilung}`
-            : device?.abteilung,
-        kostenstelle:
-          `${data?.kostenstelle}` !== "undefined"
-            ? `${data?.kostenstelle}`
-            : device?.kostenstelle,
-        SLA: `${data?.SLA}` !== "undefined" ? `${data?.SLA}` : device?.SLA,
-        preisProSLA:
-          `${data?.preisProSLA}` !== "undefined"
-            ? `${data?.preisProSLA}`
-            : device?.preisProSLA,
-        status:
-          `${data?.status}` !== "undefined"
-            ? `${data?.status}`
-            : device?.status,
-        raumbezMT:
-          `${data?.raumbezMT}` !== "undefined"
-            ? `${data?.raumbezMT}`
-            : device?.raumbezMT,
-        contact:
-          `${data?.contact}` !== "undefined"
-            ? `${data?.contact}`
-            : device?.contact,
-        date: `${data?.date}` !== "undefined" ? `${data?.date}` : device?.date,
-        email:
-          `${data?.email}` !== "undefined" ? `${data?.email}` : device?.email,
-        telephone:
-          `${data?.telephone}` !== "undefined"
-            ? `${data?.telephone}`
-            : device?.telephone,
-        companyName:
-          `${data?.companyName}` !== "undefined"
-            ? `${data?.companyName}`
-            : device?.companyName,
+        anlagenID: `${data?.anlagenID}` !== 'undefined' ? `${data?.anlagenID}` : device?.anlagenID,
+        seriennr: `${data?.seriennr}` !== 'undefined' ? `${data?.seriennr}` : device?.seriennr,
+        gehortzu: `${data?.gehortzu}` !== 'undefined' ? `${data?.gehortzu}` : device?.gehortzu,
+        anlagenbez: `${data?.anlagenbez}` !== 'undefined' ? `${data?.anlagenbez}` : device?.anlagenbez,
+        typModell: `${data?.typModell}` !== 'undefined' ? `${data?.typModell}` : device?.typModell,
+        hersteller: `${data?.hersteller}` !== 'undefined' ? `${data?.hersteller}` : device?.hersteller,
+        lieferant: `${data?.lieferant}` !== 'undefined' ? `${data?.lieferant}` : device?.lieferant,
+        servicestelle: `${data?.servicestelle}` !== 'undefined' ? `${data?.servicestelle}` : device?.servicestelle,
+        abteilung: `${data?.abteilung}` !== 'undefined' ? `${data?.abteilung}` : device?.abteilung,
+        kostenstelle: `${data?.kostenstelle}` !== 'undefined' ? `${data?.kostenstelle}` : device?.kostenstelle,
+        SLA: `${data?.SLA}` !== 'undefined' ? `${data?.SLA}` : device?.SLA,
+        preisProSLA: `${data?.preisProSLA}` !== 'undefined' ? `${data?.preisProSLA}` : device?.preisProSLA,
+        status: `${data?.status}` !== 'undefined' ? `${data?.status}` : device?.status,
+        raumbezMT: `${data?.raumbezMT}` !== 'undefined' ? `${data?.raumbezMT}` : device?.raumbezMT,
+        contact: `${data?.contact}` !== 'undefined' ? `${data?.contact}` : device?.contact,
+        date: `${data?.date}` !== 'undefined' ? `${data?.date}` : device?.date,
+        email: `${data?.email}` !== 'undefined' ? `${data?.email}` : device?.email,
+        telephone: `${data?.telephone}` !== 'undefined' ? `${data?.telephone}` : device?.telephone,
+        companyName: `${data?.companyName}` !== 'undefined' ? `${data?.companyName}` : device?.companyName,
         isRequested: isReq,
-        isDone: isDone,
-      },
+        isDone: isDone
+      }
     });
 
     await prisma.notes.create({
       data: {
         deviceId: deviceID,
-        content: data?.content,
-      },
+        content: data?.content
+      }
     });
 
-    const convertedTime = getTime(data?.time).split("T")[0];
-    const currentTime = getTime().split("T")[0];
+    const convertedTime = getTime(data?.time).split('T')[0];
+    const currentTime = getTime().split('T')[0];
 
     await prisma.reminders.create({
       data: {
         time: convertedTime,
         isComing: convertedTime > currentTime ? true : false,
         message: data?.message,
-        deviceId: deviceID,
-      },
+        deviceId: deviceID
+      }
     });
 
     const deviceImages = await prisma.images.findMany({
       where: {
-        deviceId: deviceID,
-      },
+        deviceId: deviceID
+      }
     });
 
     if (deviceImages.length) {
       await prisma.images.updateMany({
         where: {
-          deviceId: deviceID,
+          deviceId: deviceID
         },
         data: {
           imageURL: `${images?.link1}` || `${deviceImages[0]?.imageURL}`,
           imageURL: `${images?.link2}` || `${deviceImages[1]?.imageURL}`,
           imageURL: `${images?.link3}` || `${deviceImages[2]?.imageURL}`,
-          imageURL: `${images?.link4}` || `${deviceImages[3]?.imageURL}`,
-        },
+          imageURL: `${images?.link4}` || `${deviceImages[3]?.imageURL}`
+        }
       });
     } else if (req.files.length) {
       await prisma.images.createMany({
         data: [
           {
             deviceId: deviceID,
-            imageURL: images?.link1 || device?.image[0]?.imageURL,
+            imageURL: images?.link1 || device?.image[0]?.imageURL
           },
           {
             deviceId: deviceID,
-            imageURL: images?.link2 || device?.image[1]?.imageURL,
+            imageURL: images?.link2 || device?.image[1]?.imageURL
           },
           {
             deviceId: deviceID,
-            imageURL: images?.link3 || device?.image[2]?.imageURL,
+            imageURL: images?.link3 || device?.image[2]?.imageURL
           },
           {
             deviceId: deviceID,
-            imageURL: images?.link4 || device?.image[3]?.imageURL,
-          },
-        ],
+            imageURL: images?.link4 || device?.image[3]?.imageURL
+          }
+        ]
       });
     }
 
     res.status(200).json({
-      message: "Data updated successfully",
+      message: 'Data updated successfully',
       error: false,
-      device,
+      device
     });
   } catch (error) {
     console.log(error);
@@ -367,8 +327,8 @@ module.exports.updateDevices = async (req, res) => {
 
 module.exports.addDevice = async (req, res) => {
   try {
-    const isReq = req?.body?.isRequested === "true";
-    const isDone = req?.body?.isDone === "true";
+    const isReq = req?.body?.isRequested === 'true';
+    const isDone = req?.body?.isDone === 'true';
 
     // const imageFiles = req?.files;
     // const images = {
@@ -400,8 +360,8 @@ module.exports.addDevice = async (req, res) => {
         telephone: `${req?.body?.telephone}` || null,
         companyName: `${req?.body?.companyName}` || null,
         isRequested: isReq === true ? isReq : false,
-        isDone: isDone === true ? isDone : false,
-      },
+        isDone: isDone === true ? isDone : false
+      }
     });
 
     // if(req.files.length > 0){
@@ -416,24 +376,24 @@ module.exports.addDevice = async (req, res) => {
     // }
 
     res.json({
-      message: "Device created successfully!",
+      message: 'Device created successfully!',
       error: false,
       data: {
-        device,
-      },
+        device
+      }
     });
   } catch (error) {
     console.log(error);
     res.json({
       message: error.message,
-      error: true,
+      error: true
     });
   }
 };
 
 module.exports.getCurrentDateReminders = async (req, res) => {
   try {
-    const currentDate = new Date().toISOString().split("T")[0];
+    const currentDate = new Date().toISOString().split('T')[0];
 
     const devicesWithCurrentDateReminder = await prisma.devices.findMany({
       where: {
@@ -441,31 +401,29 @@ module.exports.getCurrentDateReminders = async (req, res) => {
           some: {
             time: {
               gte: currentDate,
-              lt: `${new Date(
-                new Date(currentDate).getTime() + 24 * 60 * 60 * 1000
-              )}`,
-            },
-          },
-        },
-      },
+              lt: `${new Date(new Date(currentDate).getTime() + 24 * 60 * 60 * 1000)}`
+            }
+          }
+        }
+      }
     });
 
     res.json({
       data: devicesWithCurrentDateReminder,
-      message: "success",
+      message: 'success'
     });
   } catch (error) {
     console.log(error);
     res.json({
       message: error.message,
-      error: true,
+      error: true
     });
   }
 };
 
 module.exports.uploadImages = multer({
   storage,
-  limits: { fileSize: "100000000" },
+  limits: {fileSize: '100000000'},
   fileFilter: (req, file, cb) => {
     const fileTypes = /png|jpg|jpeg/;
     const mimeType = fileTypes.test(file.mimetype);
@@ -474,6 +432,6 @@ module.exports.uploadImages = multer({
     if (mimeType && extname) {
       return cb(null, true);
     }
-    cb("Give proper file size");
-  },
-}).array("images", 4);
+    cb('Give proper file size');
+  }
+}).array('images', 4);

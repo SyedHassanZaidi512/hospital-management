@@ -2,12 +2,11 @@
 import {useState, useEffect, useCallback} from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import { Box } from '@mui/material';
+import {Box} from '@mui/material';
 
 import ListData from './ListData';
 import EditDataForm from './EditDataForm';
 import RequestedModal from './RequestedModal';
-import Pagination from './Pagination';
 
 import {toast, ToastContainer} from 'react-toastify';
 import axios from 'axios';
@@ -19,12 +18,14 @@ function Data({allDevicesData, setAllDevicesData, setDeviceIdToShowData, darkMod
   const [showRequestedModal, setShowRequestedModal] = useState(false);
   const [isRequested, setIsRequested] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [_toalDatalength, setTotalDataLength] = useState(100);
 
   const setAllData = async () => {
     try {
       setIsLoading(true);
       let res = await axios.get('http://localhost:8080/api/devices');
       setAllDevicesData(res?.data?.data?.devices);
+      setTotalDataLength(res?.data?.data.totalLength);
       setIsLoading(false);
     } catch (error) {
       if (error) setIsLoading(false);
@@ -71,6 +72,7 @@ function Data({allDevicesData, setAllDevicesData, setDeviceIdToShowData, darkMod
         default:
           let response = await axios.get('http://localhost:8080/api/devices');
           setAllDevicesData(response.data.data.devices);
+          setTotalDataLength(response?.data?.data?.totalLength);
       }
     } catch (error) {
       console.log('Error fetching data:', error);
@@ -150,7 +152,7 @@ function Data({allDevicesData, setAllDevicesData, setDeviceIdToShowData, darkMod
         <Tab value="b" label="All Requested" sx={{color: darkMode ? 'white' : 'black'}} />
         <Tab value="c" label="All Done" sx={{color: darkMode ? 'white' : 'black'}} />
       </Tabs>
-      
+
       <ListData
         uploadLoading={uploadLoading}
         hanldeDoubleClickList={hanldeDoubleClickList}
@@ -159,6 +161,9 @@ function Data({allDevicesData, setAllDevicesData, setDeviceIdToShowData, darkMod
         setDeviceIdToUpdateData={setDeviceIdToUpdateData}
         darkMode={darkMode}
         isLoading={isLoading}
+        toalDatalength={_toalDatalength}
+        setAllDevicesData={setAllDevicesData}
+        tabsValue={tabsValue}
       />
     </Box>
   );

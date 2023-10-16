@@ -1,17 +1,34 @@
 import React, {useEffect, useState} from 'react';
 import {Box, Table, Paper, TableRow, TableHead, TableContainer, TableCell, TableBody} from '@mui/material';
+import { If, Then, Else, When, Unless, Switch, Case, Default } from 'react-if';
 
 import Loader from './Loader';
 import Pagination from './Pagination';
 
-function ListData({hanldeDoubleClickList, allDevicesData, setDeviceIdToShowData, darkMode, isLoading, uploadLoading}) {
+import axios from 'axios';
+
+function ListData({
+  hanldeDoubleClickList,
+  allDevicesData,
+  setDeviceIdToShowData,
+  darkMode,
+  isLoading,
+  uploadLoading,
+  toalDatalength,
+  setAllDevicesData,
+  tabsValue
+}) {
   const [page, setPage] = useState();
   const isData = allDevicesData && allDevicesData.length > 0;
   const tabsColor = '#222';
 
-  const paginate = (e, _page) => {
-    console.log('page', _page);
-    setPage(_page);
+  const paginate = async (e, _page) => {
+    try {
+      let response = await axios.get(`http://localhost:8080/api/devices?page=${_page}&itemsPerPage=${10}`);
+      setAllDevicesData(response?.data?.data.devices);
+    } catch (error) {
+      console.log('pagination funtion has erro:', error);
+    }
   };
 
   useEffect(() => {
@@ -22,9 +39,7 @@ function ListData({hanldeDoubleClickList, allDevicesData, setDeviceIdToShowData,
     <>
       <TableContainer component={Paper} sx={{height: '100vh', width: '100%', marginBottom: '80px'}}>
         {isData ? (
-          <Box
-            sx={{display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '50px'}}
-          >
+          <Box>
             <Table sx={{minWidth: 60, bgcolor: '#ededed', width: '100%'}} size="small" aria-label="a dense table">
               <TableHead
                 style={{
@@ -106,9 +121,13 @@ function ListData({hanldeDoubleClickList, allDevicesData, setDeviceIdToShowData,
                 ))}
               </TableBody>
             </Table>
-            <Box display="flex" alignItems="center" flexDirection="row">
-              <Pagination count={Math.ceil(allDevicesData.length / 10)} onChange={paginate} paginate={paginate} />
-            </Box>
+            <If condition={tabsValue === "a"}>
+              <Then>
+                <Box display="flex" alignItems="center" flexDirection="row" marginLeft="35%">
+                  <Pagination count={Math.ceil(toalDatalength / 10 || 10)} onChange={paginate} paginate={paginate} />
+                </Box>
+              </Then>
+            </If>
           </Box>
         ) : (
           <Box
