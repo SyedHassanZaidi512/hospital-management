@@ -43,10 +43,6 @@ function ShowDataForm({ allDevicesData, deviceIdToShowData, darkMode }) {
       );
       setReminderIsComing(data.reminders[0].isComing);
       setImages(data?.images);
-      // setImage1(deviceData.images[0].imageURL);
-      // setImage2(deviceData.images[1].imageURL);
-      // setImage3(deviceData.images[3].imageURL);
-      // setImage4(deviceData.images[4].imageURL);
     } catch (error) {
       console.log("error", error);
     }
@@ -63,13 +59,12 @@ function ShowDataForm({ allDevicesData, deviceIdToShowData, darkMode }) {
         flexDirection: "column",
         width: "30%",
         justifyContent: "center",
-        padding: "15px",
+        padding: "55px 15px 56px 15px",
         bgcolor: darkMode ? "#444444" : "#d4d4d4",
-        gap: 1,
+        gap: 4,
         position: "fixed",
         zIndex: 1,
-        left: "70%",
-        marginTop: "0.5px",
+        left: "70%"
       }}
     >
       <Box
@@ -77,7 +72,7 @@ function ShowDataForm({ allDevicesData, deviceIdToShowData, darkMode }) {
           display: "flex",
           flexDirection: "column",
           borderRadius: "10px",
-          gap: "15px",
+          gap: "40px",
           padding: "15px",
           bgcolor: darkMode ? containerColor : "#ededed",
           width: "100%",
@@ -154,9 +149,9 @@ function ShowDataForm({ allDevicesData, deviceIdToShowData, darkMode }) {
             cover: "fit",
           }}
         >
-          {deviceData?.images?.length > 0 &&
+          {deviceData?.images?.length ?
             deviceData.images?.map((image) => (
-              <Card sx={{ width: "100%", height: "95px" }}>
+              <Card sx={{ width: "100%", height: "100px" }}>
                 <CardMedia
                   component="img"
                   height="100%"
@@ -166,6 +161,7 @@ function ShowDataForm({ allDevicesData, deviceIdToShowData, darkMode }) {
                       ? image?.imageURL
                       : "https://via.placeholder.com/150"
                   }
+                  //onClick={()=>{ image?.imageURL && console.log("---click done",image) }}
                   alt="Image"
                   sx={{
                     backgroundColor: darkMode ? "#2b2b2b" : "white",
@@ -173,10 +169,7 @@ function ShowDataForm({ allDevicesData, deviceIdToShowData, darkMode }) {
                   }}
                 />
               </Card>
-            ))}
-
-          {!deviceData?.images?.length > 0 &&
-            [0, 0, 0, 0].map((image, index) => (
+            )) : [1, 2, 3, 4].map((image, index) => (
               <Card sx={{ width: "100%", height: "95px" }}>
                 <CardMedia
                   component="img"
@@ -189,7 +182,8 @@ function ShowDataForm({ allDevicesData, deviceIdToShowData, darkMode }) {
                   }}
                 />
               </Card>
-            ))}
+            ))                         
+          }
         </Box>
       </Box>
 
@@ -211,7 +205,7 @@ function ShowDataForm({ allDevicesData, deviceIdToShowData, darkMode }) {
               flexDirection: "column",
               justifyContent: "center",
               alignItems: "center",
-              gap: "10px",
+              gap: "22px",
               width: "50%",
             }}
           >
@@ -230,7 +224,7 @@ function ShowDataForm({ allDevicesData, deviceIdToShowData, darkMode }) {
             <Box sx={{ width: "100%" }}>
               <InputLabel style={{ fontWeight: "100px" }}>
                 <Typography
-                  style={{ fontWeight: "bold", color: darkMode ? "white" : "" }}
+                  style={{ fontWeight: "bold", color: darkMode ? "white" : "" ,marginTop:"10px" }}
                 >
                   Date
                 </Typography>
@@ -265,7 +259,7 @@ function ShowDataForm({ allDevicesData, deviceIdToShowData, darkMode }) {
                   value={notes[0]?.content}
                   sx={{
                     "& textarea": {
-                      color: darkMode ? "white" : "black", // Set the desired font color
+                      color: darkMode ? "white" : "black",
                     },
                   }}
                 />
@@ -278,7 +272,7 @@ function ShowDataForm({ allDevicesData, deviceIdToShowData, darkMode }) {
               flexDirection: "column",
               justifyContent: "center",
               alignItems: "center",
-              gap: "10px",
+              gap: "20px",
               width: "50%",
             }}
           >
@@ -286,8 +280,8 @@ function ShowDataForm({ allDevicesData, deviceIdToShowData, darkMode }) {
               variant="contained"
               color="primary"
               sx={{
-                borderRadius: "50px", // Make the button round
-                padding: "4px 30px", // Adjust the padding to change the button size
+                borderRadius: "50px",
+                padding: "4px 30px",
                 width: "70%",
                 marginBottom: "10px",
               }}
@@ -311,6 +305,7 @@ function ShowDataForm({ allDevicesData, deviceIdToShowData, darkMode }) {
                 sx={{
                   width: "100%",
                 }}
+                marginTop="0"
               >
                 Save lastseen
               </Button>
