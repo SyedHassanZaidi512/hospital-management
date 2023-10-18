@@ -1,15 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import {useState, useEffect, useCallback} from 'react';
+import axios from 'axios';
+import {Box} from '@mui/material';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import {Box} from '@mui/material';
+import {toast, ToastContainer} from 'react-toastify';
 
 import ListData from './ListData';
 import EditDataForm from './EditDataForm';
 import RequestedModal from './RequestedModal';
-
-import {toast, ToastContainer} from 'react-toastify';
-import axios from 'axios';
 
 function Data({allDevicesData, setAllDevicesData, setDeviceIdToShowData, darkMode, isLoading: uploadLoading}) {
   const [modalOpen, setModalOpen] = useState(false);
@@ -24,6 +23,7 @@ function Data({allDevicesData, setAllDevicesData, setDeviceIdToShowData, darkMod
     try {
       setIsLoading(true);
       let res = await axios.get('http://localhost:8080/api/devices');
+      console.log('resdata', res.data.data.devices);
       setAllDevicesData(res?.data?.data?.devices);
       setTotalDataLength(res?.data?.data.totalLength);
       setIsLoading(false);
@@ -139,13 +139,13 @@ function Data({allDevicesData, setAllDevicesData, setDeviceIdToShowData, darkMod
         value={tabsValue}
         aria-label="Tabs where each tab needs to be selected manually"
         sx={{
-          display: 'flex',
-          flexDirection: 'row',
           alignContent: 'center',
-          justifyContent: 'center',
           alignItems: 'center',
           bgcolor: darkMode ? headerColor : 'background.paper',
-          color: 'white'
+          color: 'white',
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center'
         }}
       >
         <Tab value="a" label="All Devices" sx={{color: darkMode ? 'white' : 'black'}} />

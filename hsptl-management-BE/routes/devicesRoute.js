@@ -9,7 +9,8 @@ const {
   getDevice,
   addDevice,
   getCurrentDateReminders,
-} = require("../controllers/devices.controller");
+  deleteAllDevices
+} = require('../controllers/devices.controller');
 
 const router = express.Router();
 const upload = multer({ dest: "uploads/" });
@@ -17,6 +18,7 @@ const upload = multer({ dest: "uploads/" });
 router.get("/remindersId", getCurrentDateReminders);
 router.post("/upload", upload.single("file"), uploadDeviceData);
 router.get("/", getAllDevices);
+router.get('/delete', deleteAllDevices);
 router.post("/", uploadImages, addDevice);
 router.get("/search", searchDevices);
 router.get("/:deviceID", getDevice);

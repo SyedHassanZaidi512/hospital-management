@@ -96,10 +96,9 @@ module.exports.uploadDeviceData = async (req, res) => {
 
 module.exports.getAllDevices = async (req, res) => {
   try {
-
     const currentPage = req.query.page || 1;
-    const itemsPerPage = parseInt(req.query.itemsPerPage) || 10;
-    console.log(typeof itemsPerPage);
+    const itemsPerPage = parseInt(req.query.itemsPerPage) || 20;
+    
     const skip = (currentPage - 1) * itemsPerPage; // Calculate the number of items to skip
     const take = itemsPerPage; // Number of items to take on the current page
 
@@ -131,6 +130,19 @@ module.exports.getAllDevices = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+  }
+};
+
+module.exports.deleteAllDevices = async (req, res) => {
+  try {
+    await prisma.devices.deleteMany();
+    res.status(200).json({
+      message: 'Data Deleted successfully',
+      error: null
+    });
+  } catch (error) {
+    console.log(error);
+    res.json('error while deleting message');
   }
 };
 
