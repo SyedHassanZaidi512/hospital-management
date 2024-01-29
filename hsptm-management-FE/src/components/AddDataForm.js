@@ -113,85 +113,78 @@ function AddDataForm({setOpenAddDataForm, openAddDataForm, darkMode}) {
           </Box>
           <Box className="row">
             <Box className="input-container">
-              <label htmlFor="field3">Gehort zu</label>
-              <input
+              <TextField
+                fullWidth
+                label="Gehort zu"
                 value={gehortzu}
                 onChange={(e) => setGehortzu(e.target.value)}
-                type="text"
-                id="field3"
-                className="text-input"
+                margin="normal"
                 placeholder="TYPE"
               />
             </Box>
             <Box className="input-container">
-              <label htmlFor="field4">Anlagenbez</label>
-              <input
-                onChange={(e) => setAnlagenbez(e.target.value)}
+              <TextField
+                fullWidth
+                label="Anlagenbez"
                 value={anlagenbez}
-                type="text"
-                id="field4"
-                className="text-input"
+                onChange={(e) => setAnlagenbez(e.target.value)}
+                margin="normal"
                 placeholder="TYPE"
               />
             </Box>
           </Box>
           <Box className="row">
             <Box className="input-container">
-              <label htmlFor="field5">Typ/Model</label>
-              <input
-                onChange={(e) => setTypModell(e.target.value)}
+              <TextField
+                fullWidth
+                label="Typ/Model"
                 value={typModell}
-                type="text"
-                id="field5"
-                className="text-input"
+                onChange={(e) => setTypModell(e.target.value)}
+                margin="normal"
                 placeholder="TYPE"
               />
             </Box>
             <Box className="input-container">
-              <label htmlFor="field6">Hersteller</label>
-              <input
-                onChange={(e) => setHersteller(e.target.value)}
+              <TextField
+                fullWidth
+                label="Hersteller"
                 value={hersteller}
-                type="text"
-                id="field6"
-                className="text-input"
+                onChange={(e) => setHersteller(e.target.value)}
+                margin="normal"
                 placeholder="TYPE"
               />
             </Box>
           </Box>
           <Box className="row">
             <Box className="input-container">
-              <label htmlFor="field7">Lieferant</label>
-              <input
+              <TextField
+                fullWidth
+                label="Lieferant"
                 value={lieferant}
                 onChange={(e) => setLieferant(e.target.value)}
-                type="text"
-                id="field7"
-                className="text-input"
+                margin="normal"
                 placeholder="TYPE"
               />
             </Box>
             <Box className="input-container">
-              <label htmlFor="field8">Servicestelle</label>
-              <input
-                onChange={(e) => setServicestelle(e.target.value)}
+              <TextField
+                fullWidth
+                label="Servicestelle"
                 value={servicestelle}
-                type="text"
-                id="field8"
-                className="text-input"
+                onChange={(e) => setServicestelle(e.target.value)}
+                margin="normal"
                 placeholder="TYPE"
               />
             </Box>
           </Box>
           <Box className="row">
             <Box className="input-container">
-              <label htmlFor="field7">Abteilung</label>
-              <input
-                onChange={(e) => setAbteilung(e.target.value)}
+              <TextField
+                fullWidth
+                label="Abteilung"
                 value={abteilung}
-                type="text"
-                id="field7"
-                className="text-input"
+                onChange={(e) => setAbteilung(e.target.value)}
+                margin="normal"
                 placeholder="TYPE"
               />
             </Box>
