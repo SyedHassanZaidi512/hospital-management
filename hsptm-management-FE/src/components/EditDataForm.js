@@ -1,141 +1,103 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from 'react';
 
-import { toast, ToastContainer } from "react-toastify";
-import { FileUploader } from "react-drag-drop-files";
-import "react-toastify/dist/ReactToastify.css";
-import axios from "axios";
+import {toast, ToastContainer} from 'react-toastify';
+import {FileUploader} from 'react-drag-drop-files';
+import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
 
-import "../styles.css";
+import '../styles.css';
 
-import { Modal, Box } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import {Modal, Box} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
-function EditDataForm({
-  open,
-  setOpen,
-  deviceIdToUpdateData,
-  darkMode,
-  setShowRequestedModal,
-}) {
-  const [seriennr, setSeriennr] = useState("");
-  const [anlagenId, setAnlagenId] = useState("");
-  const [contact, setContact] = useState("");
-  const [deviceDate, setDeviceDate] = useState("");
-  const [email, setEmail] = useState("");
-  const [companyName, setCompanyName] = useState("");
-  const [telephone, setTelephone] = useState("");
-  const [reminderDate, setReminderDate] = useState("");
-  const [reminderIsComing, setReminderIsComing] = useState("");
-  const [notes, setNotes] = useState("");
-  const [isRequested, setIsRequested] = useState("");
-  const [isDone, setIsDone] = useState("");
+function EditDataForm({open, setOpen, deviceIdToUpdateData, darkMode, setShowRequestedModal}) {
+  const [seriennr, setSeriennr] = useState('');
+  const [anlagenId, setAnlagenId] = useState('');
+  const [contact, setContact] = useState('');
+  const [deviceDate, setDeviceDate] = useState('');
+  const [email, setEmail] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [telephone, setTelephone] = useState('');
+  const [reminderDate, setReminderDate] = useState('');
+  const [reminderIsComing, setReminderIsComing] = useState('');
+  const [notes, setNotes] = useState('');
 
-  const [image1, setImage1] = useState("");
-  const [image2, setImage2] = useState("");
-  const [image3, setImage3] = useState("");
-  const [image4, setImage4] = useState("");
+  const [image1, setImage1] = useState('');
+  const [image2, setImage2] = useState('');
+  const [image3, setImage3] = useState('');
+  const [image4, setImage4] = useState('');
 
   const getAndSetData = async () => {
     try {
-      const response = await axios.get(
-        `http://localhost:8080/api/devices/${deviceIdToUpdateData}`
-      );
+      const response = await axios.get(`http://localhost:8080/api/devices/${deviceIdToUpdateData}`);
       const deviceData = response.data.data.device;
 
-      setSeriennr(
-        deviceData?.seriennr !== "undefined" ? deviceData.seriennr : ""
-      );
-      setAnlagenId(
-        deviceData?.anlagenID !== "undefined" ? deviceData.anlagenID : ""
-      );
-      setContact(deviceData?.contact !== "undefined" ? deviceData.contact : "");
-      setDeviceDate(deviceData?.date !== "undefined" ? deviceData.date : "");
-      setEmail(deviceData?.email !== "undefined" ? deviceData.email : "");
-      setCompanyName(
-        deviceData?.companyName !== "undefined" ? deviceData.companyName : ""
-      );
-      setTelephone(
-        deviceData?.telephone !== "undefined" ? deviceData.telephone : ""
-      );
-      setNotes(deviceData?.notes !== "undefined" ? deviceData.notes : "");
-      setReminderDate(
-        deviceData?.reminders[0]?.time !== "undefined"
-          ? deviceData.reminders[0]?.time
-          : ""
-      );
+      setSeriennr(deviceData?.seriennr !== 'undefined' ? deviceData.seriennr : '');
+      setAnlagenId(deviceData?.anlagenID !== 'undefined' ? deviceData.anlagenID : '');
+      setContact(deviceData?.contact !== 'undefined' ? deviceData.contact : '');
+      setDeviceDate(deviceData?.date !== 'undefined' ? deviceData.date : '');
+      setEmail(deviceData?.email !== 'undefined' ? deviceData.email : '');
+      setCompanyName(deviceData?.companyName !== 'undefined' ? deviceData.companyName : '');
+      setTelephone(deviceData?.telephone !== 'undefined' ? deviceData.telephone : '');
+      setNotes(deviceData?.notes !== 'undefined' ? deviceData.notes : '');
+      setReminderDate(deviceData?.reminders[0]?.time !== 'undefined' ? deviceData.reminders[0]?.time : '');
       setDeviceDate(deviceData?.date);
       setReminderIsComing(deviceData?.reminders[0]?.isComing);
-      setIsRequested(deviceData?.isRequested);
-      setIsDone(deviceData?.isDone);
     } catch (error) {
-      console.log("error", error);
+      console.log('error', error);
     }
   };
 
   const handleSubmit = async () => {
     try {
       const formData = new FormData();
-      formData.append("images", image1);
-      formData.append("images", image2);
-      formData.append("images", image3);
-      formData.append("images", image4);
+      formData.append('images', image1);
+      formData.append('images', image2);
+      formData.append('images', image3);
+      formData.append('images', image4);
 
-      formData.append("seriennr", seriennr);
-      formData.append("anlagenID", anlagenId);
-      formData.append("contact", contact);
-      formData.append("date", deviceDate);
-      formData.append("email", email);
-      formData.append("companyName", companyName);
-      formData.append("telephone", telephone);
-      formData.append("content", notes);
-      formData.append("time", reminderDate);
+      formData.append('seriennr', seriennr);
+      formData.append('anlagenID', anlagenId);
+      formData.append('contact', contact);
+      formData.append('date', deviceDate);
+      formData.append('email', email);
+      formData.append('companyName', companyName);
+      formData.append('telephone', telephone);
+      formData.append('content', notes);
+      formData.append('time', reminderDate);
 
-      const response = await axios.patch(
-        `http://localhost:8080/api/devices/update/${deviceIdToUpdateData}`,
-        formData
-      );
+      const response = await axios.patch(`http://localhost:8080/api/devices/update/${deviceIdToUpdateData}`, formData);
       // const responseNotes = await axios.patch(`http://localhost:8080/api/devices/${deviceIdToUpdateData}/notes`,{content:notes,title:"notes"});
       setShowRequestedModal(!response.data.device.isRequested);
       setOpen(false);
     } catch (error) {
-      console.log("error", error);
+      console.log('error', error);
       toast.error(error.message);
     }
   };
 
-  const fileTypes = ["JPG", "PNG", "JPEG"];
+  const fileTypes = ['JPG', 'PNG', 'JPEG'];
   useEffect(() => {
     getAndSetData();
-  }, [deviceIdToUpdateData]);
+  }, [deviceIdToUpdateData, setShowRequestedModal]);
 
-  const formContainerClass = darkMode
-    ? "form-container dark"
-    : "form-container";
+  const formContainerClass = darkMode ? 'form-container dark' : 'form-container';
 
   return (
-    <Modal
-      open={open}
-      // onClose={handleClose}
-      aria-labelledby="modal-title"
-      aria-describedby="modal-description"
-    >
+    <Modal open={open} aria-labelledby="modal-title" aria-describedby="modal-description">
       <div className={formContainerClass}>
-        <div className={darkMode ? "black_container" : "light-container"}>
-          <ToastContainer
-            position="top-center"
-            autoClose={3000}
-            hideProgressBar
-          />
+        <div className={darkMode ? 'black_container' : 'light-container'}>
+          <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
           <Box
             sx={{
-              display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "center",
-              height: "13px",
-              "&:hover svg": {
-                cursor: "pointer",
-                color: "red", // Change the color to your desired color
-              },
+              display: 'flex',
+              justifyContent: 'flex-end',
+              alignItems: 'center',
+              height: '13px',
+              '&:hover svg': {
+                cursor: 'pointer',
+                color: 'red'
+              }
             }}
             onClick={() => setOpen(false)}
           >
@@ -148,7 +110,7 @@ function EditDataForm({
               <input
                 type="text"
                 id="field1"
-                className={darkMode ? "text-input dark" : "text-input"}
+                className={darkMode ? 'text-input dark' : 'text-input'}
                 value={anlagenId}
                 placeholder="ID"
                 onChange={(e) => setAnlagenId(e.target.value)}
@@ -158,7 +120,7 @@ function EditDataForm({
               <label htmlFor="field2">SERIENNR</label>
               <input
                 type="text"
-                className={darkMode ? "text-input dark" : "text-input"}
+                className={darkMode ? 'text-input dark' : 'text-input'}
                 id="field2"
                 placeholder="Sr. No"
                 value={seriennr}
@@ -170,7 +132,7 @@ function EditDataForm({
               <input
                 type="text"
                 id="field3"
-                className={darkMode ? "text-input dark" : "text-input"}
+                className={darkMode ? 'text-input dark' : 'text-input'}
                 placeholder="+42-__-___"
                 value={contact}
                 onChange={(e) => setContact(e.target.value)}
@@ -183,7 +145,7 @@ function EditDataForm({
               <input
                 type="text"
                 id="field4"
-                className={darkMode ? "text-input dark" : "text-input"}
+                className={darkMode ? 'text-input dark' : 'text-input'}
                 value={deviceDate}
                 placeholder="mm/dd/yy"
                 onChnage={(e) => setDeviceDate(e.target.value)}
@@ -194,7 +156,7 @@ function EditDataForm({
               <input
                 type="text"
                 id="field5"
-                className={darkMode ? "text-input dark" : "text-input"}
+                className={darkMode ? 'text-input dark' : 'text-input'}
                 placeholder="abc@gmail.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -205,7 +167,7 @@ function EditDataForm({
               <input
                 type="text"
                 id="field6"
-                className={darkMode ? "text-input dark" : "text-input"}
+                className={darkMode ? 'text-input dark' : 'text-input'}
                 placeholder="+42-__-___"
                 value={telephone}
                 onChange={(e) => setTelephone(e.target.value)}
@@ -218,7 +180,7 @@ function EditDataForm({
               <input
                 type="text"
                 id="field5"
-                className={darkMode ? "text-input dark" : "text-input"}
+                className={darkMode ? 'text-input dark' : 'text-input'}
                 placeholder="Company Name"
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
@@ -227,13 +189,7 @@ function EditDataForm({
           </div>
 
           <div className="recommend-container">
-            <h3
-            // className={
-            //   darkMode ? "recommend-heading dark" : "recommend-heading"
-            // }
-            >
-              Remind Me
-            </h3>
+            <h3>Remind Me</h3>
             <div className="recommend-content">
               <input
                 className="calendar"
@@ -256,7 +212,7 @@ function EditDataForm({
             <textarea
               id="notes"
               value={notes}
-              className={darkMode ? "text-input dark" : "text-input"}
+              className={darkMode ? 'text-input dark' : 'text-input'}
               onChange={(e) => setNotes(e.target.value)}
             ></textarea>
           </div>
@@ -265,44 +221,24 @@ function EditDataForm({
             <div className="image-upload-row">
               <div className="image-upload">
                 <div className="App">
-                  <FileUploader
-                    handleChange={(file) => setImage1(file)}
-                    value={image1}
-                    name="file"
-                    types={fileTypes}
-                  />
+                  <FileUploader handleChange={(file) => setImage1(file)} value={image1} name="file" types={fileTypes} />
                 </div>
               </div>
               <div className="image-upload">
                 <div>
-                  <FileUploader
-                    handleChange={(file) => setImage2(file)}
-                    value={image2}
-                    name="file"
-                    types={fileTypes}
-                  />
+                  <FileUploader handleChange={(file) => setImage2(file)} value={image2} name="file" types={fileTypes} />
                 </div>
               </div>
             </div>
             <div className="image-upload-row">
               <div className="image-upload">
                 <div className="App">
-                  <FileUploader
-                    handleChange={(file) => setImage3(file)}
-                    value={image3}
-                    name="file"
-                    types={fileTypes}
-                  />
+                  <FileUploader handleChange={(file) => setImage3(file)} value={image3} name="file" types={fileTypes} />
                 </div>
               </div>
               <div className="image-upload">
                 <div className="App">
-                  <FileUploader
-                    handleChange={(file) => setImage4(file)}
-                    value={image4}
-                    name="file"
-                    types={fileTypes}
-                  />
+                  <FileUploader handleChange={(file) => setImage4(file)} value={image4} name="file" types={fileTypes} />
                 </div>
               </div>
             </div>
@@ -310,10 +246,6 @@ function EditDataForm({
           <button className="submit-button" onClick={handleSubmit}>
             Submit
           </button>
-
-          {/* <Button variant="contained" onClick={() => setOpen(false)}>
-          Close
-        </Button> */}
         </div>
       </div>
     </Modal>

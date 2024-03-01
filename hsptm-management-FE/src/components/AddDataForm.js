@@ -24,7 +24,7 @@ function AddDataForm({setOpenAddDataForm, openAddDataForm, darkMode}) {
   const [status, setStatus] = useState('');
   const [raumbezMT, setRaumbezMT] = useState('');
 
-  const handleSumitForm = async () => {
+  const handleSubmitForm = async () => {
     try {
       const reqData = {
         seriennr,
@@ -243,7 +243,7 @@ function AddDataForm({setOpenAddDataForm, openAddDataForm, darkMode}) {
               />
             </Box>
           </Box>
-          <Button variant="contained" color="primary" className="submit-button" onClick={handleSumitForm}>
+          <Button variant="contained" color="primary" className="submit-button" onClick={handleSubmitForm}>
             Submit
           </Button>
         </Box>
