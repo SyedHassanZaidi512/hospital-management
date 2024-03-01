@@ -98,7 +98,7 @@ module.exports.getAllDevices = async (req, res) => {
   try {
     const currentPage = req.query.page || 1;
     const itemsPerPage = parseInt(req.query.itemsPerPage) || 20;
-    
+
     const skip = (currentPage - 1) * itemsPerPage; // Calculate the number of items to skip
     const take = itemsPerPage; // Number of items to take on the current page
 
@@ -292,17 +292,17 @@ module.exports.updateDevices = async (req, res) => {
       }
     });
 
+    const imageUrls = Object.values(images);
     if (deviceImages.length) {
-      await prisma.images.updateMany({
-        where: {
-          deviceId: deviceID
-        },
-        data: {
-          imageURL: `${images?.link1}` || `${deviceImages[0]?.imageURL}`,
-          imageURL: `${images?.link2}` || `${deviceImages[1]?.imageURL}`,
-          imageURL: `${images?.link3}` || `${deviceImages[2]?.imageURL}`,
-          imageURL: `${images?.link4}` || `${deviceImages[3]?.imageURL}`
-        }
+      deviceImages.map(async (image, index) => {
+        await prisma.images.update({
+          where: {
+            id: image.id
+          },
+          data: {
+            imageURL: imageUrls[index] || `${deviceImages[0]?.imageURL}`
+          }
+        });
       });
     } else if (req.files.length) {
       await prisma.images.createMany({
