@@ -211,7 +211,6 @@ module.exports.getDevice = async (req, res) => {
 };
 
 module.exports.updateDevices = async (req, res) => {
-  console.log('request made');
   const data = req.body;
   const isReq = data?.isRequested === 'true';
   const isDone = data?.isDone === 'true';
@@ -300,7 +299,7 @@ module.exports.updateDevices = async (req, res) => {
             id: image.id
           },
           data: {
-            imageURL: imageUrls[index] || `${deviceImages[0]?.imageURL}`
+            imageURL: imageUrls[index] || `${deviceImages[index]?.imageURL}`
           }
         });
       });
@@ -342,14 +341,6 @@ module.exports.addDevice = async (req, res) => {
     const isReq = req?.body?.isRequested === 'true';
     const isDone = req?.body?.isDone === 'true';
 
-    // const imageFiles = req?.files;
-    // const images = {
-    //   link1: `${host}${imageFiles[0]?.path}`,
-    //   link2: `${host}${imageFiles[1]?.path}`,
-    //   link3: `${host}${imageFiles[2]?.path}`,
-    //   link4: `${host}${imageFiles[3]?.path}`,
-    // };
-
     const device = await prisma.devices.create({
       data: {
         anlagenID: `${req?.body?.anlagenID}` || null,
@@ -375,17 +366,6 @@ module.exports.addDevice = async (req, res) => {
         isDone: isDone === true ? isDone : false
       }
     });
-
-    // if(req.files.length > 0){
-    //   await prisma.images.createMany({
-    //     data: [
-    //       { deviceId: device.id, imageURL: images?.link1 },
-    //       { deviceId: device.id, imageURL: images?.link2 },
-    //       { deviceId: device.id, imageURL: images?.link3 },
-    //       { deviceId: device.id, imageURL: images?.link4 },
-    //     ],
-    //   });
-    // }
 
     res.json({
       message: 'Device created successfully!',
