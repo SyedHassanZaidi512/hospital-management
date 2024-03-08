@@ -32,15 +32,15 @@ function EditDataForm({open, setOpen, deviceIdToUpdateData, darkMode, setShowReq
       const response = await axios.get(`http://localhost:8080/api/devices/${deviceIdToUpdateData}`);
       const deviceData = response.data.data.device;
 
-      setSeriennr(deviceData?.seriennr !== 'undefined' ? deviceData.seriennr : '');
-      setAnlagenId(deviceData?.anlagenID !== 'undefined' ? deviceData.anlagenID : '');
-      setContact(deviceData?.contact !== 'undefined' ? deviceData.contact : '');
-      setDeviceDate(deviceData?.date !== 'undefined' ? deviceData.date : '');
-      setEmail(deviceData?.email !== 'undefined' ? deviceData.email : '');
-      setCompanyName(deviceData?.companyName !== 'undefined' ? deviceData.companyName : '');
-      setTelephone(deviceData?.telephone !== 'undefined' ? deviceData.telephone : '');
-      setNotes(deviceData?.notes !== 'undefined' ? deviceData.notes : '');
-      setReminderDate(deviceData?.reminders[0]?.time !== 'undefined' ? deviceData.reminders[0]?.time : '');
+      setSeriennr(deviceData?.seriennr);
+      setAnlagenId(deviceData?.anlagenID);
+      setContact(deviceData?.contact);
+      setDeviceDate(deviceData?.date);
+      setEmail(deviceData?.email);
+      setCompanyName(deviceData?.companyName);
+      setTelephone(deviceData?.telephone);
+      setNotes(deviceData?.notes);
+      setReminderDate(deviceData?.reminders[0]?.time);
       setDeviceDate(deviceData?.date);
       setReminderIsComing(deviceData?.reminders[0]?.isComing);
     } catch (error) {
@@ -148,7 +148,7 @@ function EditDataForm({open, setOpen, deviceIdToUpdateData, darkMode, setShowReq
                 className={darkMode ? 'text-input dark' : 'text-input'}
                 value={deviceDate}
                 placeholder="mm/dd/yy"
-                onChnage={(e) => setDeviceDate(e.target.value)}
+                onChange={(e) => setDeviceDate(e.target.value)}
               />
             </div>
             <div className="form-field">

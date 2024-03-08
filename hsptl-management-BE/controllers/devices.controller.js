@@ -291,8 +291,8 @@ module.exports.updateDevices = async (req, res) => {
       }
     });
 
-    const imageUrls = Object.values(images);
-    if (deviceImages.length) {
+    if (deviceImages.length && images) {
+      const imageUrls = Object.values(images);
       deviceImages.map(async (image, index) => {
         await prisma.images.update({
           where: {
