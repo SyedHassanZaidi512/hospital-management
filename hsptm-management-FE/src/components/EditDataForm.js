@@ -39,10 +39,10 @@ function EditDataForm({open, setOpen, deviceIdToUpdateData, darkMode, setShowReq
       setEmail(deviceData?.email);
       setCompanyName(deviceData?.companyName);
       setTelephone(deviceData?.telephone);
-      setNotes(deviceData?.notes);
       setReminderDate(deviceData?.reminders[0]?.time);
       setDeviceDate(deviceData?.date);
       setReminderIsComing(deviceData?.reminders[0]?.isComing);
+      setNotes(deviceData?.notes[0]?.content);
     } catch (error) {
       console.log('error', error);
     }

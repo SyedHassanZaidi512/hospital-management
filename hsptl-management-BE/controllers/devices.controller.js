@@ -188,7 +188,12 @@ module.exports.getDevice = async (req, res) => {
       include: {
         images: true,
         reminders: true,
-        notes: true
+        notes: {
+          orderBy: {
+            updatedAt: 'desc'
+          },
+          take: 1
+        }
       }
     });
 
